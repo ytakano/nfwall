@@ -11,6 +11,7 @@ void usage();
 int
 main(int argc, char *argv[])
 {
+        int n;
         int begin, end;
         int port;
         nat_type     type;
@@ -29,9 +30,9 @@ main(int argc, char *argv[])
         type  = full_cone;
         port  = 0;
 
-        while ((ch = getopt(argc, argv, "d:b:e:t:frpv")) != -1){
+        while ((ch = getopt(argc, argv, "p:b:e:t:n:v")) != -1){
                 switch (ch){
-                case 'd':
+                case 'p':
                         port = atoi(optarg);
                         break;
                 case 'b':
@@ -43,14 +44,15 @@ main(int argc, char *argv[])
                 case 't':
                         ttl = atoi(optarg);
                         break;
-                case 'f':
-                        type = full_cone;
-                        break;
-                case 'r':
-                        type = restricted_cone;
-                        break;
-                case 'p':
-                        type = port_restricted_cone;
+                case 'n':
+                        n = atoi(optarg);
+                        if (n == 0) {
+                                type = full_cone;
+                        } else if (n == 1) {
+                                type = restricted_cone;
+                        } else if (n == 2) {
+                                type = port_restricted_cone;
+                        }
                         break;
                 case 'v':
                         verbose = true;
@@ -65,7 +67,7 @@ main(int argc, char *argv[])
 
 
         if (port == 0) {
-                std::cerr << "please use -d option for divert socket"
+                std::cerr << "please use -p option for divert socket"
                           << std::endl;
                 usage();
                 return -1;
@@ -91,13 +93,16 @@ usage()
         std::cout << "usage:\n"
                   << "  "
                   << progname
-                  << " [-b port] [-e port] [-t ttl] [-f | -r | -p] -d port\n"
+                  << " [-b port] [-e port] [-t ttl] [-n 0 | 1 | 2] [-v] -p port\n"
                   << "    b: beginning port number, default value is 0\n"
                   << "    e: ending port number, default value is 65535\n"
                   << "    t: time to live of mapping, default value is 300\n"
-                  << "    f: set full cone NAT\n"
-                  << "    r: set restricted cone NAT\n"
-                  << "    p: set port-restricted cone NAT\n"
-                  << "    d: port number for divert socket"
+                  << "    n: select filter type.\n"
+                  << "       choose 0, 1 or 2. default value is 0.\n"
+                  << "         0: filter like full cone NAT\n"
+                  << "         1: filter like restricted cone NAT\n"
+                  << "         2: filter like port-restricted cone NAT\n"
+                  << "    v: toggle verbose mode\n"
+                  << "    p: port number of divert socket"
                   << std::endl;
 }
