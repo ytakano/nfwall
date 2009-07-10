@@ -1,0 +1,17 @@
+CXXFLAGS += -g -Wall
+
+src[] =
+	main
+	divert
+	filter
+
+PROGNAME = nfwall
+
+.PHONY: all clean
+
+clean:
+	rm -f *~ *.a *.o $(PROGNAME)
+
+all: $(CXXProgram $(PROGNAME), $(src))
+
+.DEFAULT: all
